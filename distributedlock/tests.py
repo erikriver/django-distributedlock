@@ -64,9 +64,45 @@ class LockCacheTestCase(TestCase):
 
         self.assertRaises(RuntimeError, bar)
 
+    def test_records_values_in_task(self):
+        from django.core.cache import cache
+
+        @distributedlock(key='recorded_task', lock=self.lock)
+        def foo():
+            key = self.lock.key
+            value = self.lock.instance_id
+            record = cache.get(key)
+
+            self.assertEqual(record, value)
+
+        foo()
+
+        key = self.lock.key
+        value = self.lock.instance_id
+        record = cache.get(key)
+        self.assertNotEqual(record, value)
+        self.assertFalse(record)
+        
 
 @override_settings(DISTRIBUTEDLOCK_CLIENT='database')
 class LockDatabaseTestCase(LockCacheTestCase):
 
     def setUp(self):
         self.lock = DatabaseLock(key='periodic_task2')
+
+    def test_records_values_in_task(self):
+        from .models import Lock
+
+        @distributedlock(key='recorded_task', lock=self.lock)
+        def foo():
+            key = self.lock.key
+            value = self.lock.instance_id
+            locked = Lock.objects.get(key=key)
+
+            self.assertEqual(locked.value, value)
+
+        foo()
+
+        key = self.lock.key
+        self.assertRaises(Lock.DoesNotExist, Lock.objects.get, key=key)
+        
