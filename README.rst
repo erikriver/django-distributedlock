@@ -48,6 +48,7 @@ Once installed in django project::
 
 Needs ``gevent`` installed only for tests purpose.
 
+Some ideas are taken from https://github.com/snbuback/DistributedLock
 
 © 2013 Scryent
 License BSD
