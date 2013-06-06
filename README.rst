@@ -14,9 +14,14 @@ Add in your ``settings.py`` in ``INSTALLED_APPS`` ::
     
     INSTALLED_APPS = (
     ...
+    'distributedlock',
     ...
-    'distributedlock'
     )
+
+django-distributedlock can be work with django cache or a database model, you must to set the client in the variable ``DISTRIBUTEDLOCK_CLIENT``, with the values ``cache`` or ``database`` according your needs.::
+
+    DISTRIBUTEDLOCK_CLIENT="cache"       # or "database"
+
 
 Use
 ===
