@@ -45,7 +45,7 @@ class distributedlock(object):
                 with self:
                 	return f(*args, **kargs)
             except LockNotAcquiredError:
-                log.warn("Task %s NOT work" % self.key)
+                log.warn("Task %s NOT work by locked" % self.key)
 
         return wrapped
 
@@ -55,11 +55,11 @@ class distributedlock(object):
             raise RuntimeError("Key not specified!")
 
         if self.lock.acquire(self.blocking):
-            log.warn("locking with key %s " % self.key)
+            log.info("locking with key %s " % self.key)
         else:
             raise LockNotAcquiredError()
             
 
     def __exit__(self, type, value, traceback):
-        log.warn("releasing lock %s " % self.key)
+        log.info("releasing lock %s " % self.key)
         self.lock.release()
