@@ -9,6 +9,7 @@ from distributedlock.databaselock import DatabaseLock
 import logging
 logging.basicConfig()
 
+
 @override_settings(DISTRIBUTEDLOCK_CLIENT='cache')
 class LockCacheTestCase(TestCase):
 
@@ -25,12 +26,12 @@ class LockCacheTestCase(TestCase):
 
     def test_with_function(self):
 
-    	def bar(t):
+        def bar(t):
             time.sleep(t)
             return t
 
         foo = 0
-    	with distributedlock(key='periodic_task', lock=self.lock):
+        with distributedlock(key='periodic_task', lock=self.lock):
             foo = bar(1)
 
         self.assertEqual(foo, 1)
@@ -55,7 +56,6 @@ class LockCacheTestCase(TestCase):
         self.assertEqual(self.foo, 3)
 
     def test_raise_exception_task(self):
-        import gevent
 
         @distributedlock(key='error_task', lock=self.lock)
         def bar():
@@ -82,7 +82,7 @@ class LockCacheTestCase(TestCase):
         record = cache.get(key)
         self.assertNotEqual(record, value)
         self.assertFalse(record)
-        
+
 
 @override_settings(DISTRIBUTEDLOCK_CLIENT='database')
 class LockDatabaseTestCase(LockCacheTestCase):
@@ -102,7 +102,6 @@ class LockDatabaseTestCase(LockCacheTestCase):
             self.assertEqual(locked.value, value)
 
         foo()
-
+        # after the excecution the record doesn't exist.
         key = self.lock.key
         self.assertRaises(Lock.DoesNotExist, Lock.objects.get, key=key)
-        

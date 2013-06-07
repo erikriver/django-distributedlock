@@ -6,6 +6,7 @@ from django.core.cache import cache
 
 log = logging.getLogger(__name__)
 
+
 class CacheLock(object):
     """
     Try to do same as threading.Lock, but using django cache to store lock instance to do a distributed lock
@@ -17,7 +18,7 @@ class CacheLock(object):
 
         # When you use threading.Lock object, instance references acts as ID of the object. In memcached
         # we have a key to identify lock, but to identify which machine/instance/thread has lock is necessary
-        # put something in memcached value to identify it. So, each MemcachedLock instance has a random value to 
+        # put something in memcached value to identify it. So, each MemcachedLock instance has a random value to
         # identify who has the lock
         self.instance_id = uuid.uuid1().hex
 
@@ -27,7 +28,6 @@ class CacheLock(object):
         if added:
             return True
         return False
-
 
     def release(self):
         value = cache.get(self.key)

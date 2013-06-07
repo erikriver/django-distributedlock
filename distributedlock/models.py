@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Lock(models.Model):
     key = models.CharField(max_length=255, blank=False)
     value = models.CharField(max_length=255, blank=False)
@@ -11,4 +12,3 @@ class Lock(models.Model):
 
     def __unicode__(self):
         return self.key
-    
