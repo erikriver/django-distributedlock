@@ -45,17 +45,16 @@ class distributedlock(object):
                 with self:
                     return f(*args, **kargs)
             except LockNotAcquiredError:
-                log.warn("couldn't acquire lock to run task %" % self.key)
+                log.warn("couldn't acquire lock %s" % self.key)
 
         return wrapped
 
     def __enter__(self):
         """ for use with "with" block """
-        if not (type(self.key) == str or type(self.key) == unicode) and self.key == '':
-            raise RuntimeError("Key not specified!")
-
+        if not self.key:
+            raise RuntimeError("key value required")
         if self.lock.acquire(self.blocking):
-            log.debug("locking with key %s " % self.key)
+            log.debug("acquired lock %s " % self.key)
         else:
             raise LockNotAcquiredError()
 

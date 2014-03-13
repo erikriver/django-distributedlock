@@ -1,17 +1,16 @@
 from setuptools import setup, find_packages
-import os
 
-version = '0.2.1'
+version = '0.2.2'
 
 setup(name='django-distributedlock',
       version=version,
       description="",
       long_description=open("README.rst").read(),
       classifiers=[
-        "Programming Language :: Python",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        ],
-      keywords='distribuited lock',
+          "Programming Language :: Python",
+          "Topic :: Software Development :: Libraries :: Python Modules",
+      ],
+      keywords='distributed lock',
       author='Erik Rivera',
       author_email='erik.river@gmail.com',
       url='',
