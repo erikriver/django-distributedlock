@@ -16,7 +16,7 @@ if DISTRIBUTEDLOCK_CLIENT == 'cache':
 elif DISTRIBUTEDLOCK_CLIENT == 'database':
     DISTRIBUTEDLOCK_FACTORY = DatabaseLock
 else:
-    raise ImproperlyConfigured("Unsupported client")
+    raise ImproperlyConfigured("Unsupported lock client")
 
 
 class LockNotAcquiredError(Exception):
@@ -45,7 +45,7 @@ class distributedlock(object):
                 with self:
                     return f(*args, **kargs)
             except LockNotAcquiredError:
-                log.warn("Task %s NOT work by locked" % self.key)
+                log.warn("couldn't acquire lock to run task %" % self.key)
 
         return wrapped
 
@@ -55,10 +55,10 @@ class distributedlock(object):
             raise RuntimeError("Key not specified!")
 
         if self.lock.acquire(self.blocking):
-            log.info("locking with key %s " % self.key)
+            log.debug("locking with key %s " % self.key)
         else:
             raise LockNotAcquiredError()
 
     def __exit__(self, type, value, traceback):
-        log.info("releasing lock %s " % self.key)
+        log.debug("releasing lock %s " % self.key)
         self.lock.release()

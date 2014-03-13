@@ -8,7 +8,8 @@ log = logging.getLogger(__name__)
 
 class DatabaseLock(object):
     """
-    Try to do same as threading.Lock, but using django cache to store lock instance to do a distributed lock
+    Try to do same as threading.Lock, but using django cache to store lock
+    instance to do a distributed lock
     """
 
     def __init__(self, key, timeout=60):
@@ -23,7 +24,6 @@ class DatabaseLock(object):
 
     def acquire(self, blocking=True):
         lock, created = Lock.objects.get_or_create(key=self.key)
-        log.warn("Added=%s" % repr(created))
         if created:
             lock.value = self.instance_id
             lock.save()

@@ -16,15 +16,11 @@ class CacheLock(object):
         self.key = "lock:%s" % key
         self.timeout = timeout
 
-        # When you use threading.Lock object, instance references acts as ID of the object. In memcached
-        # we have a key to identify lock, but to identify which machine/instance/thread has lock is necessary
-        # put something in memcached value to identify it. So, each MemcachedLock instance has a random value to
-        # identify who has the lock
+        # uniquely identify who has the lock
         self.instance_id = uuid.uuid1().hex
 
     def acquire(self, blocking=True):
         added = cache.add(self.key, self.instance_id, self.timeout)
-        log.warn("Added=%s" % repr(added))
         if added:
             return True
         return False
@@ -32,8 +28,11 @@ class CacheLock(object):
     def release(self):
         value = cache.get(self.key)
         if value == self.instance_id:
-            # Avoid short timeout, because if key expires, after GET, and another lock occurs, memcached remove
-            # below can delete another lock! There is no way to solve this in memcached
+            # Avoid short timeout, because if key expires, after GET, and
+            # another lock occurs, memcached remove below can delete
+            # another lock!
+            # TODO: fix this by storing timeout value in cache and caching
+            # forever.
             cache.delete(self.key)
         else:
-            log.warn("I've no lock in Memecached to release. Increase TIMEOUT of lock operations")
+            log.warn("tried to release invalid lock.  Increase TIMEOUT of lock operations")

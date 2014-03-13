@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.2.1
+----------------
+
+* Changed some confusing/noisy log messages [hexsprite]
+
 0.1 - Unreleased
 ----------------
 
