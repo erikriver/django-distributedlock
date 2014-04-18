@@ -1,0 +1,5 @@
+- DatabaseLock: add timeout support by checking timestamp of existing locks
+  when acquiring
+- DatabaseLock: implement grace period
+- Document grace period and make it configurable
+

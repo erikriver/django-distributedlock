@@ -12,9 +12,10 @@ class DatabaseLock(object):
     instance to do a distributed lock
     """
 
-    def __init__(self, key, timeout=60):
+    def __init__(self, key, timeout=86400, grace=60):
         self.key = "lock:%s" % key
         self.timeout = timeout
+        self.grace = grace
 
         # When you use threading.Lock object, instance references acts as ID of the object. In memcached
         # we have a key to identify lock, but to identify which machine/instance/thread has lock is necessary
