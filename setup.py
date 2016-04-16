@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
-version = '0.2.3'
+import distributedlock
 
 setup(name='django-distributedlock',
-      version=version,
+      version=distributedlock.__version__,
       description="",
       long_description=open("README.rst").read(),
       classifiers=[
@@ -27,3 +27,4 @@ setup(name='django-distributedlock',
       # -*- Entry points: -*-
       """,
       )
+
