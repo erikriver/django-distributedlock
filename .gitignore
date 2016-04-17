@@ -3,3 +3,5 @@
 *.swp
 *.egg-info/
 .DS_Store
+.tox/
+.eggs/
