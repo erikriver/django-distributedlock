@@ -13,7 +13,7 @@ class CacheLock(object):
     instance to do a distributed lock
     """
 
-    def __init__(self, key, timeout=86400, grace=60):
+    def __init__(self, key, timeout=86400, grace=None):
         self.key = "lock:%s" % key
         self.timeout = timeout
         self.grace = grace
@@ -22,10 +22,7 @@ class CacheLock(object):
         self.instance_id = uuid.uuid1().hex
 
     def acquire(self, blocking=True):
-        added = cache.add(self.key, self.instance_id, self.timeout)
-        if added:
-            return True
-        return False
+        return bool(cache.add(self.key, self.instance_id, self.timeout))
 
     def release(self):
         value = cache.get(self.key)

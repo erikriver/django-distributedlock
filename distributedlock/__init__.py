@@ -9,5 +9,5 @@ try:
 except ImportError:
     # Previous django versions should load module level 
     # objects into present namespace
-    from distributedlock.lock import *
+    from .lock import *
 

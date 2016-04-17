@@ -1,4 +1,8 @@
+from distutils.version import StrictVersion
 import time
+import logging
+
+import django
 from django.test import TestCase
 from django.test.utils import override_settings
 
@@ -6,7 +10,10 @@ from distributedlock import distributedlock
 from distributedlock.cachelock import CacheLock
 from distributedlock.databaselock import DatabaseLock
 
-import logging
+
+DJANGO_VERSION = django.get_version()
+
+
 logging.basicConfig()
 
 
@@ -60,7 +67,6 @@ class LockCacheTestCase(TestCase):
         @distributedlock(key='error_task', lock=self.lock)
         def bar():
             raise RuntimeError
-            print "error!"
 
         self.assertRaises(RuntimeError, bar)
 
@@ -84,24 +90,27 @@ class LockCacheTestCase(TestCase):
         self.assertFalse(record)
 
 
-@override_settings(DISTRIBUTEDLOCK_CLIENT='database')
-class LockDatabaseTestCase(LockCacheTestCase):
-
-    def setUp(self):
-        self.lock = DatabaseLock(key='periodic_task2')
-
-    def test_records_values_in_task(self):
-        from .models import Lock
-
-        @distributedlock(key='recorded_task', lock=self.lock)
-        def foo():
+if StrictVersion(DJANGO_VERSION) >= StrictVersion('1.7'):
+    @override_settings(DISTRIBUTEDLOCK_CLIENT='database')
+    class LockDatabaseTestCase(LockCacheTestCase):
+    
+        def setUp(self):
+            self.lock = DatabaseLock(key='periodic_task2')
+    
+        def test_records_values_in_task(self):
+            from distributedlock.models import Lock
+            import pdb;pdb.set_trace()
+    
+            @distributedlock(key='recorded_task', lock=self.lock)
+            def foo():
+                key = self.lock.key
+                value = self.lock.instance_id
+                locked = Lock.objects.get(key=key)
+    
+                self.assertEqual(locked.value, value)
+    
+            foo()
+            # after the excecution the record doesn't exist.
             key = self.lock.key
-            value = self.lock.instance_id
-            locked = Lock.objects.get(key=key)
-
-            self.assertEqual(locked.value, value)
-
-        foo()
-        # after the excecution the record doesn't exist.
-        key = self.lock.key
-        self.assertRaises(Lock.DoesNotExist, Lock.objects.get, key=key)
+            self.assertRaises(Lock.DoesNotExist, Lock.objects.get, key=key)
+    
