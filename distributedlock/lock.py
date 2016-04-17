@@ -3,10 +3,6 @@ import logging
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from .cachelock import CacheLock
-from .databaselock import DatabaseLock
-
-
 __all__ = ('distributedlock', 'LockNotAcquiredError')
 
 
@@ -16,15 +12,6 @@ log = logging.getLogger(__name__)
 DISTRIBUTEDLOCK_TIMEOUT = getattr(settings, 'DISTRIBUTEDLOCK_TIMEOUT', 60)
 DISTRIBUTEDLOCK_BLOCKING = getattr(settings, 'DISTRIBUTEDLOCK_BLOCKING', True)
 DISTRIBUTEDLOCK_CLIENT = getattr(settings, 'DISTRIBUTEDLOCK_CLIENT', 'cache')
-
-LockFactory = {
-    'cache': CacheLock,
-    'database': DatabaseLock,
-}.get(DISTRIBUTEDLOCK_CLIENT)
-
-if not LockFactory:
-    msg = "Unsupported lock client: {}".format(LockFactory)
-    raise ImproperlyConfigured(msg)
 
 
 class LockNotAcquiredError(Exception):
@@ -41,6 +28,7 @@ class distributedlock(object):
             self.blocking = blocking
 
         if not self.lock:
+            LockFactory = self.get_lock_factory()
             self.lock = LockFactory(self.key, timeout=DISTRIBUTEDLOCK_TIMEOUT)
 
     def __call__(self, f):
@@ -70,4 +58,19 @@ class distributedlock(object):
     def __exit__(self, type, value, traceback):
         log.debug("releasing lock %s " % self.key)
         self.lock.release()
+
+    def get_lock_factory(self):
+        from .cachelock import CacheLock
+        from .databaselock import DatabaseLock
+
+        LockFactory = {
+            'cache': CacheLock,
+            'database': DatabaseLock,
+        }.get(DISTRIBUTEDLOCK_CLIENT)
+
+        if not LockFactory:
+            msg = "Unsupported lock client: {}".format(LockFactory)
+            raise ImproperlyConfigured(msg)
+
+        return LockFactory
 

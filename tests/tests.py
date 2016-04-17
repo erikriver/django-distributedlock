@@ -7,9 +7,6 @@ from django.test import TestCase
 from django.test.utils import override_settings
 
 from distributedlock import distributedlock
-from distributedlock.cachelock import CacheLock
-from distributedlock.databaselock import DatabaseLock
-
 
 DJANGO_VERSION = django.get_version()
 
@@ -21,6 +18,8 @@ logging.basicConfig()
 class LockCacheTestCase(TestCase):
 
     def setUp(self):
+        from distributedlock.cachelock import CacheLock
+
         self.lock = CacheLock(key='periodic_task')
 
     def test_decorated_function(self):
@@ -95,11 +94,11 @@ if StrictVersion(DJANGO_VERSION) >= StrictVersion('1.7'):
     class LockDatabaseTestCase(LockCacheTestCase):
     
         def setUp(self):
+            from distributedlock.databaselock import DatabaseLock
             self.lock = DatabaseLock(key='periodic_task2')
     
         def test_records_values_in_task(self):
             from distributedlock.models import Lock
-            import pdb;pdb.set_trace()
     
             @distributedlock(key='recorded_task', lock=self.lock)
             def foo():
