@@ -1,7 +1,6 @@
 import uuid
 import logging
 
-from .models import Lock
 
 log = logging.getLogger(__name__)
 
@@ -12,7 +11,7 @@ class DatabaseLock(object):
     instance to do a distributed lock
     """
 
-    def __init__(self, key, timeout=86400, grace=60):
+    def __init__(self, key, timeout=86400, grace=None):
         self.key = "lock:%s" % key
         self.timeout = timeout
         self.grace = grace
@@ -24,6 +23,7 @@ class DatabaseLock(object):
         self.instance_id = uuid.uuid1().hex
 
     def acquire(self, blocking=True):
+        from .models import Lock
         lock, created = Lock.objects.get_or_create(key=self.key)
         if created:
             lock.value = self.instance_id
@@ -32,6 +32,7 @@ class DatabaseLock(object):
         return False
 
     def release(self):
+        from .models import Lock
         lock = Lock.objects.get(key=self.key, value=self.instance_id)
         if lock:
             lock.delete()

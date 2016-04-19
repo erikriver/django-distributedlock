@@ -52,3 +52,5 @@ Some ideas were take from https://github.com/snbuback/DistributedLock
 
 © 2013 Scryent
 License BSD
+
+Current code @ https://github.com/15five/django-distributedlock
