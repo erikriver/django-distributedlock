@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='django-distributedlock',
-    version='0.3.0',
+    version='0.3.1',
     description="A distributed lock",
     long_description=open("README.rst").read(),
     classifiers=[
