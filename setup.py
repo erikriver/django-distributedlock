@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 setup(
@@ -10,6 +10,7 @@ setup(
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
+    packages=['distributedlock'],
     keywords='distributed lock',
     author='Erik Rivera',
     author_email='erik.river@gmail.com',
