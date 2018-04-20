@@ -5,3 +5,5 @@
 .DS_Store
 .tox/
 .eggs/
+*build/*
+

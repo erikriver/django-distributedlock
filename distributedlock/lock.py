@@ -49,7 +49,7 @@ class distributedlock(object):
                 with self:
                     return f(*args, **kargs)
             except LockNotAcquiredError:
-                log.warn("couldn't acquire lock {}".format(self.lock.key))
+                log.warning("couldn't acquire lock {}".format(self.lock.key))
 
         return wrapped
 
