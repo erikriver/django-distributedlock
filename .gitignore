@@ -6,4 +6,4 @@
 .tox/
 .eggs/
 *build/*
-
+.idea*/

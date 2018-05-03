@@ -1,6 +1,7 @@
 import uuid
 import logging
 
+from django.db import IntegrityError
 
 log = logging.getLogger(__name__)
 
@@ -24,12 +25,15 @@ class DatabaseLock(object):
 
     def acquire(self, blocking=True):
         from .models import Lock
-        lock, created = Lock.objects.get_or_create(key=self.key)
-        if created:
-            lock.value = self.instance_id
-            lock.save()
-            return True
-        return False
+        try:
+            lock = Lock.objects.create(key=self.key)
+        except IntegrityError:
+            # We rely on the DB to enforce the unique index on the key column
+            return False
+
+        lock.value = self.instance_id
+        lock.save()
+        return True
 
     def release(self):
         from .models import Lock
@@ -37,4 +41,4 @@ class DatabaseLock(object):
         if lock:
             lock.delete()
         else:
-            log.warn("I've no lock in DB to release. Increase TIMEOUT of lock operations")
+            log.warning("I've no lock in DB to release. Increase TIMEOUT of lock operations")
