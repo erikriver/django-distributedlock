@@ -6,6 +6,7 @@ setup(
     version='0.4.0',
     description="A distributed lock",
     long_description=open("README.rst").read(),
+    url="https://github.com/15five/django-distributedlock",
     classifiers=[
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
