@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Lock(models.Model):
-    key = models.CharField(max_length=255, blank=False)
+    key = models.CharField(max_length=255, blank=False, unique=True)
     value = models.CharField(max_length=255, blank=False)
     timestamp = models.DateTimeField(null=True, blank=True)
 
